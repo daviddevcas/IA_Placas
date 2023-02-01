@@ -2,10 +2,10 @@ import numpy as np
 import cv2
 import pytesseract
 import skimage
-pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
 
 class LPR:
-    def __init__(self, min_w=80, max_w=110, min_h=25, max_h=52, ratio=3.07692307692):
+    def __init__(self, min_w=80, max_w=90, min_h=25, max_h=72, ratio=2):
         self.min_w = min_w
         self.max_w = max_w
         self.min_h = min_h
@@ -16,7 +16,7 @@ class LPR:
         return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     def apply_threshold(self, img):
-        return cv2.threshold(img, 170, 255, cv2.THRESH_BINARY_INV)[1]
+        return cv2.threshold(img, 120, 255, cv2.THRESH_BINARY_INV)[1]
 
     def apply_adaptive_threshold(self, img):
         return cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 7, 13)
@@ -29,7 +29,7 @@ class LPR:
         for cnt in contours:
             x, y, w, h = cv2.boundingRect(cnt)
             aspect_ratio = float(w) / h
-            if (np.isclose(aspect_ratio, self.ratio, atol=0.7) and
+            if (np.isclose(aspect_ratio, self.ratio, atol=2) and
                (self.max_w > w > self.min_w) and
                (self.max_h > h > self.min_h)):
                 candidates.append(cnt)
